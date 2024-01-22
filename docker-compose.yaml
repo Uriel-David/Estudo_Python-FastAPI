@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: $DB_PASS
+    volumes:
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - api_network
+  web:
+    build: .
+    command: sh -c "uvicorn main:app --reload --port=8000 --host=0.0.0.0"
+    container_name: fastapi-container
+    env_file:
+      - .env
+    depends_on:
+      - db
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/app
+    networks:
+      - api_network
+networks:
+  api_network:
+    driver: bridge
