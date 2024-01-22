@@ -4,7 +4,7 @@ from configs.config import SessionLocal
 from sqlalchemy.orm import Session
 from schemas.schema import BookSchema, Request, Response, RequestBook
 
-import services.service
+import services.service as service
 
 router = APIRouter()
 
@@ -19,7 +19,7 @@ def get_db():
 
 @router.post("/create")
 async def create_book_service(request: RequestBook, db: Session = Depends(get_db)):
-    services.create_book(db, book=request.parameter)
+    service.create_book(db, book=request.parameter)
     return Response(status="Ok",
                     code="200",
                     message="Book created successfully").dict(exclude_none=True)
@@ -27,18 +27,18 @@ async def create_book_service(request: RequestBook, db: Session = Depends(get_db
 
 @router.get("/")
 async def get_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    _books = services.get_book(db, skip, limit)
+    _books = service.get_book(db, skip, limit)
     return Response(status="Ok", code="200", message="Success fetch all data", result=_books)
 
 
 @router.patch("/update")
 async def update_book(request: RequestBook, db: Session = Depends(get_db)):
-    _book = services.update_book(db, book_id=request.parameter.id,
+    _book = service.update_book(db, book_id=request.parameter.id,
                              title=request.parameter.title, description=request.parameter.description)
     return Response(status="Ok", code="200", message="Success update data", result=_book)
 
 
 @router.delete("/delete")
 async def delete_book(request: RequestBook,  db: Session = Depends(get_db)):
-    services.remove_book(db, book_id=request.parameter.id)
+    service.remove_book(db, book_id=request.parameter.id)
     return Response(status="Ok", code="200", message="Success delete data").dict(exclude_none=True)
