@@ -1,1 +1,1 @@
-CREATE DATABASE python_db;
+CREATE DATABASE example;
